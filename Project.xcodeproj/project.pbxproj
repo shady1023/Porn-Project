@@ -8,20 +8,32 @@
 
 /* Begin PBXBuildFile section */
 		CE6448DD210247E8001A0692 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6448DC210247E8001A0692 /* AppDelegate.swift */; };
-		CE6448DF210247E8001A0692 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6448DE210247E8001A0692 /* ViewController.swift */; };
+		CE6448DF210247E8001A0692 /* AuthVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE6448DE210247E8001A0692 /* AuthVC.swift */; };
 		CE6448E2210247E8001A0692 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE6448E0210247E8001A0692 /* Main.storyboard */; };
 		CE6448E4210247E9001A0692 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE6448E3210247E9001A0692 /* Assets.xcassets */; };
 		CE6448E7210247E9001A0692 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE6448E5210247E9001A0692 /* LaunchScreen.storyboard */; };
+		CE6448F22102480F001A0692 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE6448EF2102480F001A0692 /* FBSDKCoreKit.framework */; };
+		CE6448F32102480F001A0692 /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE6448F02102480F001A0692 /* Bolts.framework */; };
+		CE6448F42102480F001A0692 /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE6448F12102480F001A0692 /* FBSDKLoginKit.framework */; };
+		CEF8E087210AFFC8003A4BF2 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF8E086210AFFC8003A4BF2 /* User.swift */; };
+		CEF8E08A210B0077003A4BF2 /* DatabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF8E089210B0077003A4BF2 /* DatabaseService.swift */; };
+		CEF8E08E210B0109003A4BF2 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF8E08D210B0109003A4BF2 /* MainTabBarController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		CE6448D9210247E8001A0692 /* Project.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Project.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE6448DC210247E8001A0692 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		CE6448DE210247E8001A0692 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		CE6448DE210247E8001A0692 /* AuthVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthVC.swift; sourceTree = "<group>"; };
 		CE6448E1210247E8001A0692 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		CE6448E3210247E9001A0692 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CE6448E6210247E9001A0692 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CE6448E8210247E9001A0692 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CE6448EF2102480F001A0692 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
+		CE6448F02102480F001A0692 /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Bolts.framework; sourceTree = "<group>"; };
+		CE6448F12102480F001A0692 /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKLoginKit.framework; sourceTree = "<group>"; };
+		CEF8E086210AFFC8003A4BF2 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		CEF8E089210B0077003A4BF2 /* DatabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseService.swift; sourceTree = "<group>"; };
+		CEF8E08D210B0109003A4BF2 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,6 +41,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE6448F22102480F001A0692 /* FBSDKCoreKit.framework in Frameworks */,
+				CE6448F32102480F001A0692 /* Bolts.framework in Frameworks */,
+				CE6448F42102480F001A0692 /* FBSDKLoginKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -38,6 +53,7 @@
 		CE6448D0210247E8001A0692 = {
 			isa = PBXGroup;
 			children = (
+				CE6448EE21024800001A0692 /* Frameworks */,
 				CE6448DB210247E8001A0692 /* Project */,
 				CE6448DA210247E8001A0692 /* Products */,
 			);
@@ -54,14 +70,43 @@
 		CE6448DB210247E8001A0692 /* Project */ = {
 			isa = PBXGroup;
 			children = (
+				CEF8E08C210B0082003A4BF2 /* Service */,
+				CEF8E088210AFFD8003A4BF2 /* Models */,
 				CE6448DC210247E8001A0692 /* AppDelegate.swift */,
-				CE6448DE210247E8001A0692 /* ViewController.swift */,
+				CE6448DE210247E8001A0692 /* AuthVC.swift */,
+				CEF8E08D210B0109003A4BF2 /* MainTabBarController.swift */,
 				CE6448E0210247E8001A0692 /* Main.storyboard */,
 				CE6448E3210247E9001A0692 /* Assets.xcassets */,
 				CE6448E5210247E9001A0692 /* LaunchScreen.storyboard */,
 				CE6448E8210247E9001A0692 /* Info.plist */,
 			);
 			path = Project;
+			sourceTree = "<group>";
+		};
+		CE6448EE21024800001A0692 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				CE6448F02102480F001A0692 /* Bolts.framework */,
+				CE6448EF2102480F001A0692 /* FBSDKCoreKit.framework */,
+				CE6448F12102480F001A0692 /* FBSDKLoginKit.framework */,
+			);
+			path = Frameworks;
+			sourceTree = "<group>";
+		};
+		CEF8E088210AFFD8003A4BF2 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				CEF8E086210AFFC8003A4BF2 /* User.swift */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		CEF8E08C210B0082003A4BF2 /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				CEF8E089210B0077003A4BF2 /* DatabaseService.swift */,
+			);
+			name = Service;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -135,8 +180,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE6448DF210247E8001A0692 /* ViewController.swift in Sources */,
+				CE6448DF210247E8001A0692 /* AuthVC.swift in Sources */,
 				CE6448DD210247E8001A0692 /* AppDelegate.swift in Sources */,
+				CEF8E08E210B0109003A4BF2 /* MainTabBarController.swift in Sources */,
+				CEF8E08A210B0077003A4BF2 /* DatabaseService.swift in Sources */,
+				CEF8E087210AFFC8003A4BF2 /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -282,6 +330,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = D239QBMRNP;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
 				INFOPLIST_FILE = Project/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -300,6 +352,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = D239QBMRNP;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
 				INFOPLIST_FILE = Project/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
