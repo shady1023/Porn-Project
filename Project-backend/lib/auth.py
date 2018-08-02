@@ -1,4 +1,4 @@
-import pymysql, hashlib, datetime, random, secrets
+import pymysql, hashlib, datetime, random, secrets, requests
 
 '''
 {
@@ -36,18 +36,20 @@ class User :
         # Callback when these scenario has been got through successfully - 
         # 1. SignIn then launch the app.
         # 2. SignOut then -->[SignUp(SignUp -> SignIn), SignIn(SignOut -> SignIn)]
+        # NOTE : If Using application Oauth to SignIn, will check token has already expired or not
         user = self.cursor.execute('''SELECT * FROM user WHERE token=%s'''%self.uuid)
-        if user != 0 and user.fetchone()['token'] == token or superGet :
+        if (user != 0 and user.fetchone()['token'] == token) or superGet :
             self.information = self.cursor.fetchone()
             self.status = True
             if superGet :
-                # For third party token updated.
-                self.cursor.execute('''UPDATE user SET token = "%s" WHERE uuid = "%s"'''%(superGet, self.uuid))
+                # Check if token is still valid.
+                application, application_token = self.information['account_type'], superGet
+                if not applicationExpiredCheck(application, application_token) :
+                    self.status = False
         else :
             self.status = False
         
-    
-    def checkDecorator(func) :
+    def checkDecorator(self, func) :
         # Check privileges when action requires authorization.
         def accessCheck(*args, **kwargs) :
             if self.status :
@@ -61,7 +63,7 @@ class User :
             return {
                 'UniCheck' : self.UniCheck(self.credentialspack['Target'], self.credentialspack),
                 'emailOauth' : self.emailOauth(self.OauthAction, self.email, self.password),
-                'facebookOauth' : self.facebookOauth(self.uuid, self.token, self.credentialspack)
+                'facebookOauth' : self.facebookOauth(self.uuid, self.credentialspack['application_token'])
             }[OauthAction]
         except :
             return rStruct(Bool=False, Target='Oauth', Message='Server Internal Error.')
@@ -80,7 +82,7 @@ class User :
             else :
                 return rStruct(Bool=True,Target=target, Message='Value Is Available For Submit.')
     
-    def emailOauth(OauthType, email, password) :
+    def emailOauth(self, OauthType, email, password) :
         try :
             OauthType = OauthType.split['_'][1]
         except :
@@ -119,10 +121,12 @@ class User :
                 if self.status :
                     # If token has been submitted correctly then return information directly.
                     self.OauthTimestampAdd(self.uuid, 'last_login_at')
-                    return eturn rStruct(Bool=True, Target='SignIn', Message='', Data=self.information)
+                    return rStruct(Bool=True, Target='SignIn', Message='', Data=self.information)
                 else :
                     # Require email and password for login verification.
                     if not self.email and self.password :
+                        if 'df' != self.information['account_type'] :
+                            return rStruct(Bool=False, Target='SignIn', Message='Required Token Update From Application Oauth.')
                         return rStruct(Bool=False, Target='SignIn', Message='Email or Password Required For SignIn.')
                     select = self.cursor.execute('''SELECT * FROM user WHERE email=%s'''%self.email)
                     if select = 0 :
@@ -154,9 +158,16 @@ class User :
             else :
                 return rStruct(Bool=False,Target='Oauth', Message='OauthType Error.')
 
-    def facebookOauth(uuid, token)) :
-        if uniCheck('uuid', {'uuid':uuid})['Bool'] :
-            self.updateStatus(uuid, token, superGet=token)
+    def facebookOauth(self, uuid, fb_token)) :
+        if not uniCheck('uuid', {'uuid':uuid})['Bool'] :
+            token = genRandom('token')
+            while True :
+                if self.UniCheck('token', {'token' : token})['Bool'] :
+                    break
+                else :
+                    token = genRandom('token')
+            self.cursor.execute('''UPDATE user SET token = "%s", application_token = "%s" WHERE uuid = %s'''%(token, fb_token, uuid))
+            self.updateStatus(uuid, token, superGet=fb_token)
             return rStruct(Bool=True, Target='SignIn', Message='', Data=self.information)
         else :
             self.emailOauth('emailOauth_SignUp', self.email, 'fb_' + uuid)
@@ -193,3 +204,15 @@ def genRandom(Target) :
 
 def getNow() :
     return datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+def applicationExpiredCheck(application, token) :
+    if application == 'fb' :
+        api_url = 'https://graph.facebook.com/me'
+        params = {'access_token' : token}
+        r = requests.get(api_url, params=params)
+        if 'error' in json.loads(r.text).keys():
+            return False
+        else :
+            return True
+    else :
+        return False
