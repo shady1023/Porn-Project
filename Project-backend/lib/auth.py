@@ -62,7 +62,8 @@ class User :
             return {
                 'UniCheck' : self.UniCheck(self.credentialspack['Target'], self.credentialspack),
                 'emailOauth' : self.emailOauth(self.OauthAction, self.email, self.password),
-                'facebookOauth' : self.facebookOauth(self.uuid, self.token, self.credentialspack)
+                'facebookOauth' : self.facebookOauth(self.uuid, self.token, self.credentialspack),
+                'userEdit' : self.userEdit(self.uuid, self.credentialspack)
             }[OauthAction]
         except :
             return rStruct(Bool=False, Target='Oauth', Message='Server Internal Error.')
@@ -171,10 +172,10 @@ class User :
     def userEdit(self, uuid, **kwargs) :
         col = [ x['Field'] for x in self.cursor.execute('''SHOW COLUMNS FROM user''').fetchall()]
         for field in kwargs :
-        if field in col :
-            self.cursor.execute('''UPDATE user SET %s = "%s" WHERE uuid="%s"'''(field, kwargs[field], uuid))
-        else :
+        if field not in col or field == 'Target':
             return rStruct(Bool=True,Target=target, Message='Value Is Available For Submit.')
+        else :
+            self.cursor.execute('''UPDATE user SET %s = "%s" WHERE uuid="%s"'''(field, kwargs[field], uuid))
         
 
         
