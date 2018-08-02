@@ -166,6 +166,18 @@ class User :
 
         for field in args :
             self.cursor.execute('''UPDATE user SET %s = "%s" WHERE uuid = "%s"'''%(field, getNow(), uuid))
+
+    @checkDecorator
+    def userEdit(self, uuid, **kwargs) :
+        col = [ x['Field'] for x in self.cursor.execute('''SHOW COLUMNS FROM user''').fetchall()]
+        for field in kwargs :
+        if field in col :
+            self.cursor.execute('''UPDATE user SET %s = "%s" WHERE uuid="%s"'''(field, kwargs[field], uuid))
+        else :
+            return rStruct(Bool=True,Target=target, Message='Value Is Available For Submit.')
+        
+
+        
             
 def rStruct(Bool=False, Target=None, Message=None, Data=None) :
         
