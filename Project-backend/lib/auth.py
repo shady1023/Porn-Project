@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 import pymysql, hashlib, datetime, random, secrets, requests
 
 '''
