@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 import pymysql, hashlib, datetime, random, secrets
 
 '''
@@ -62,8 +61,7 @@ class User :
             return {
                 'UniCheck' : self.UniCheck(self.credentialspack['Target'], self.credentialspack),
                 'emailOauth' : self.emailOauth(self.OauthAction, self.email, self.password),
-                'facebookOauth' : self.facebookOauth(self.uuid, self.token, self.credentialspack),
-                'userEdit' : self.userEdit(self.uuid, self.credentialspack)
+                'facebookOauth' : self.facebookOauth(self.uuid, self.token, self.credentialspack)
             }[OauthAction]
         except :
             return rStruct(Bool=False, Target='Oauth', Message='Server Internal Error.')
@@ -169,16 +167,14 @@ class User :
             self.cursor.execute('''UPDATE user SET %s = "%s" WHERE uuid = "%s"'''%(field, getNow(), uuid))
 
     @checkDecorator
-    def userEdit(self, uuid, **kwargs) :
+    def userEdit(self, uuid, credentialspack) :
         col = [ x['Field'] for x in self.cursor.execute('''SHOW COLUMNS FROM user''').fetchall()]
-        for field in kwargs :
-        if field not in col or field == 'Target':
-            return rStruct(Bool=True,Target=target, Message='Value Is Available For Submit.')
-        else :
-            self.cursor.execute('''UPDATE user SET %s = "%s" WHERE uuid="%s"'''(field, kwargs[field], uuid))
-        
-
-        
+        credentialspack.pop('Target')
+        for field in credentialspack :
+            if field in col :
+                self.cursor.execute('''UPDATE user SET %s = "%s" WHERE uuid="%s"'''(field, kwargs[field], uuid))
+            else :
+                return rStruct(Bool=True,Target=target, Message='Value Is Available For Submit.')
             
 def rStruct(Bool=False, Target=None, Message=None, Data=None) :
         
