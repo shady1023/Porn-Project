@@ -1,4 +1,4 @@
-import pymysql, hashlib, datetime
+import pymysql, hashlib, datetime, random, secrets
 
 '''
 {
@@ -10,7 +10,7 @@ import pymysql, hashlib, datetime
         'password' : password,
     }
 
-    'Value' : {
+    'credentialsPack' : {
         'Target' : '...',
         '...' : '...',
         '...' : '...',
@@ -31,19 +31,21 @@ class User :
         self.OauthAction = OauthAction
         self.Oauth = self.actionFactory(OauthAction)
 
-    def updateStatus(self, uuid, token) :
+    def updateStatus(self, uuid, token, superGet=None) :
         # Give full user access when uuid and token has been submitted correctly. (Save in local storage.)
         # Callback when these scenario has been got through successfully - 
         # 1. SignIn then launch the app.
         # 2. SignOut then -->[SignUp(SignUp -> SignIn), SignIn(SignOut -> SignIn)]
         user = self.cursor.execute('''SELECT * FROM user WHERE token=%s'''%self.uuid)
-        if user != 0 and user.fetchone()['token'] == token :
-            self.token = token
-            self.uuid = user.fetchone()['uuid']
-            self.information = user.fetchone()
+        if user != 0 and user.fetchone()['token'] == token or superGet :
+            self.information = self.cursor.fetchone()
             self.status = True
+            if superGet :
+                # For third party token updated.
+                self.cursor.execute('''UPDATE user SET token = "%s" WHERE uuid = "%s"'''%(superGet, self.uuid))
         else :
             self.status = False
+        
     
     def checkDecorator(func) :
         # Check privileges when action requires authorization.
@@ -52,15 +54,14 @@ class User :
                 return func(*args, **kwargs)
             else :
                 return 
-        return accessCheck
-            
+        return accessCheck     
 
     def actionFactory(self, OauthAction) :
         try :
             return {
                 'UniCheck' : self.UniCheck(self.credentialspack['Target'], self.credentialspack),
                 'emailOauth' : self.emailOauth(self.OauthAction, self.email, self.password),
-                'facebookOauth' : self.facebookOauth(kwarg[''])
+                'facebookOauth' : self.facebookOauth(self.uuid, self.token, self.credentialspack)
             }[OauthAction]
         except :
             return rStruct(Bool=False, Target='Oauth', Message='Server Internal Error.')
@@ -88,7 +89,7 @@ class User :
             return rStruct(Bool=False, Target='Oauth' Message='No Data Provided.')
         else :
             if OauthType == 'SignUp' :
-                # SignUp process start here.
+                # SignUp process start here. OauthType = emailOauth_SignUp
                 flag = self.UniCheck(email, {'email' : email})['Bool']
                 saveField = self.credentialspack
                 saveField.pop('Target')
@@ -97,6 +98,15 @@ class User :
                     for field in table:
                         if field['Null'] == 'No' and field['Field'] not in saveField :
                             return rStruct(Bool=True,Target='SignUp', Message='No Required Field Included : %s.'%field['Field'])
+                    uuid = genRandom('uuid')
+                    while True :
+                        if self.UniCheck('uuid', {'uuid' : uuid})['Bool'] :
+                            break
+                        else :
+                            uuid = genRandom('uuid')
+                    saveField['uuid'] = uuid
+                    saveField['created_at'] = getNow()
+                    self.uuid = uuid
                     saveKey = str(tuple(saveField.keys()))
                     saveValue = str(tuple(saveField.values()))
                     self.cursor.execute('''INSERT INTO user %s VALUES %s'''%(saveKey.replace("'",""), saveValue))
@@ -105,9 +115,10 @@ class User :
                 else :
                     return flag
             elif OauthType == 'SignIn' :
-                # SignIn process start here.
+                # SignIn process start here. OauthType = emailOauth_SignIn
                 if self.status :
                     # If token has been submitted correctly then return information directly.
+                    self.OauthTimestampAdd(self.uuid, 'last_login_at')
                     return eturn rStruct(Bool=True, Target='SignIn', Message='', Data=self.information)
                 else :
                     # Require email and password for login verification.
@@ -117,19 +128,43 @@ class User :
                     if select = 0 :
                         return rStruct(Bool=False, Target='SignIn', Message='Wrong Email For SignIn.')
                     else :
-                        if select.fetchone()['password'] == self.passowrd :
-                            return rStruct(Bool=True, Target='SignIn', Message='', Data=select.fetchone())
+                        data = self.cursor.fetchone()
+                        if data['password'] == self.passowrd :
+                            token = genRandom('token')
+                            while True :
+                                if self.UniCheck('token', {'token' : token})['Bool'] :
+                                    break
+                                else :
+                                    token = genRandom('token')
+                            self.cursor.execute('''UPDATE user SET token = "%s" WHERE uuid = "%s"'''%(token, data['uuid']))
+                            self.OauthTimestampAdd(data['uuid'], 'last_login_at', 'token_created_at')
+                            self.status = True
+                            return rStruct(Bool=True, Target='SignIn', Message='', Data=data)
                         else :
                             return rStruct(Bool=False, Target='SignIn', Message='Wrong Password For SignIn.')
                     
             elif OuathType == 'SignOut' :
+                # Remove Token From Database. OauthType = emailOauth_SignOut
                     if self.uuid :
-                        self.cursor.execute('''UPDATE user SET token = NULL WHERE uuid = %s'''%self.uuid)
+                        self.cursor.execute('''UPDATE user SET token = NULL WHERE uuid = "%s"'''%(self.uuid))
+                        self.OauthTimestampAdd(self.uuid, 'last_logout_at')
                         return rStruct(Bool=True, Target='SignOut', Message='')
                     else :
                         return rStruct(Bool=False, Target='SignOut', Message='Incomplete Requests Information.')
             else :
                 return rStruct(Bool=False,Target='Oauth', Message='OauthType Error.')
+
+    def facebookOauth(uuid, token)) :
+        if uniCheck('uuid', {'uuid':uuid})['Bool'] :
+            self.updateStatus(uuid, token, superGet=token)
+            return rStruct(Bool=True, Target='SignIn', Message='', Data=self.information)
+        else :
+            self.emailOauth('emailOauth_SignUp', self.email, 'fb_' + uuid)
+    
+    def OauthTimestampAdd(self, uuid, *args) :     
+
+        for field in args :
+            self.cursor.execute('''UPDATE user SET %s = "%s" WHERE uuid = "%s"'''%(field, getNow(), uuid))
             
 def rStruct(Bool=False, Target=None, Message=None, Data=None) :
         
@@ -137,6 +172,14 @@ def rStruct(Bool=False, Target=None, Message=None, Data=None) :
         'Bool' : Bool,
         'Target' : Target,
         'Message' : Message,
-        'Data' : Data
+        'Data' : Data,
     }
-    
+
+def genRandom(Target) :
+    if Target == 'uuid' :
+        return str(random.randint(0,9999999999999999)).zfill(16)
+    elif Target == 'token' : 
+        return secrets.token_hex(random.randint(20,40))
+
+def getNow() :
+    return datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
